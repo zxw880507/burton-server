@@ -11,7 +11,15 @@ async function main() {
         email: "test1@burton.com",
       },
     });
-    return user;
+    const fetching = await prisma.productFetch.create({
+      data: {
+        userId: user.id,
+        productId: "W22-228251",
+        status: "IDLE",
+      },
+    });
+    console.log(user, fetching);
+    prisma.$disconnect();
   } catch (err) {
     throw err;
   }
