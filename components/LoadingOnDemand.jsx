@@ -6,6 +6,7 @@ import { toggleMode } from "../store/features/modeSlice";
 import { sendSMSMessage, phoneState } from "../store/features/phoneSlice";
 import { sendEmail, emailState } from "../store/features/emailSlice";
 import { useRouter } from "next/router";
+import axios from "axios";
 
 export default function LoadingOnDemand(props) {
   const { pid, interval } = props;
@@ -16,24 +17,14 @@ export default function LoadingOnDemand(props) {
   const { email } = useSelector(emailState);
 
   useEffect(() => {
-    const timeInterval = interval ? interval : 5;
-    const intervalFetching = setInterval(
-      () => dispatch(fetchOnDemand(pid)),
-      timeInterval * 1000
-    );
-    if (status === "succeeded") {
-      clearInterval(interval);
-      router.push("/result").then(() => {
-        if (phoneNumber) {
-          dispatch(sendSMSMessage());
-        }
-        if (email) {
-          dispatch(sendEmail());
-        }
-      });
-    }
-    return () => clearInterval(intervalFetching);
-  }, [status, pid, interval, phoneNumber, email, router, dispatch]);
+    axios
+      .get(`api/interval/${pid}`, {
+        params: { action: { type: "FETCH" } },
+      })
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+  }, [pid]);
+
   return (
     <Container
       maxWidth="sm"
@@ -56,6 +47,24 @@ export default function LoadingOnDemand(props) {
           transform: "translate(-50%, -50%)",
         }}
         onClick={() => dispatch(toggleMode())}
+      >
+        back
+      </Button>
+      <Button
+        variant="contained"
+        sx={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+        }}
+        onClick={() =>
+          axios
+            .get(`api/interval/${pid}`, {
+              params: { action: { type: "STOP" } },
+            })
+            .then((res) => console.log(res.data))
+            .catch((err) => console.log(err))
+        }
       >
         back
       </Button>
