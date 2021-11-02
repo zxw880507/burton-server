@@ -2,7 +2,7 @@ import nc from "next-connect";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { dataReformat } from "../../../utils/helpers";
+// import { dataReformat } from "../../../utils/helpers";
 
 const handler = nc()
   // use connect based middleware
@@ -21,9 +21,6 @@ const handler = nc()
             id: true,
             email,
           },
-        });
-        const fetchingId = await prisma.productFetch.findUnique({
-          where: {},
         });
 
         res.status(200).json("fetching");
