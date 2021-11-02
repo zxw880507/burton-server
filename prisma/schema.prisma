@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongoDb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  IDLE
+  FETCHING
+  SUCCEEDED
+}
+
+model User {
+  id            String         @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  email         String         @unique @db.String
+  product_fetch ProductFetch[]
+}
+
+model ProductFetch {
+  id        String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  productId String
+  status    Status
+  userId    String @db.ObjectId
+  user      User   @relation(fields: [userId], references: [id])
+}
