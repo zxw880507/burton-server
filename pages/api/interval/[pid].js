@@ -1,5 +1,7 @@
 import nc from "next-connect";
 import cors from "cors";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 import { dataReformat } from "../../../utils/helpers";
 
 const handler = nc()
@@ -8,12 +10,22 @@ const handler = nc()
   .get(async (req, res) => {
     const { pid, interval, action } = req.query;
     const actionSerialize = JSON.parse(action);
+    const email = "test1@burton.com";
     switch (actionSerialize.type) {
       case "FETCH":
-        const intervalFetching = setInterval(
-          () => console.log(pid, interval),
-          1000
-        );
+        const user = await prisma.user.findUnique({
+          where: {
+            email,
+          },
+          select: {
+            id: true,
+            email,
+          },
+        });
+        const fetchingId = await prisma.productFetch.findUnique({
+          where: {},
+        });
+
         res.status(200).json("fetching");
         break;
       case "STOP":
