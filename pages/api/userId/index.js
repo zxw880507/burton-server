@@ -7,18 +7,19 @@ const handler = nc()
   // use connect based middleware
   .use(cors())
   .get(async (req, res) => {
-    const { action } = req.query;
-    const actionSerialize = JSON.parse(action);
     const email = "test1@burton.com";
     try {
-      const user = prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: {
           email,
         },
       });
-      const productFetchingList = prisma.productFetch.findMany({
+      const productFetchingList = await prisma.productFetch.findMany({
         where: {
           userId: user.id,
+        },
+        orderBy: {
+          createdAt: "asc",
         },
       });
       res.status(200).json(productFetchingList);

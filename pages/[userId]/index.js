@@ -1,12 +1,26 @@
 import SimpleAccordion from "../../components/SimpleAccordion";
+import AddFetch from "../../components/AddFetch";
 import { Container } from "@mui/material";
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getProductFetchingList,
+  productFetchingState,
+} from "../../store/features/productFetchingSlice";
 export default function UserMain() {
-  const arr = [1, 2, 3];
+  const dispatch = useDispatch();
+  const { productFetchingList, status } = useSelector(productFetchingState);
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(getProductFetchingList());
+    }
+  }, [dispatch, status]);
   return (
     <Container
-      maxWidth="sm"
+      maxWidth="md"
       sx={{
+        minWidth: "320",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -14,10 +28,11 @@ export default function UserMain() {
         marginTop: "2em",
       }}
     >
-      <div>
-        {arr.map((el, index) => (
-          <SimpleAccordion key={index} />
+      <div style={{ width: "100%" }}>
+        {productFetchingList.map((el, index) => (
+          <SimpleAccordion key={index} fetchingData={el} mode="EDIT" />
         ))}
+        <AddFetch mode="ADD" />
       </div>
     </Container>
   );

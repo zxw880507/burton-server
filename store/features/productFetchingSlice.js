@@ -33,7 +33,7 @@ const productFetchingSlice = createSlice({
       })
       .addCase(getProductFetchingList.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.product = action.payload;
+        state.productFetchingList = action.payload;
       })
       .addCase(getProductFetchingList.rejected, (state, action) => {
         state.status = "failed";
