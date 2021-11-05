@@ -6,6 +6,7 @@ import {
   AccordionSummary,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
 import Stepper from "./Stepper";
 export default function AddFetch(props) {
   const { mode } = props;
@@ -22,9 +23,15 @@ export default function AddFetch(props) {
             alignItems: "center",
           }}
         >
-          <IconButton onClick={() => setExpanded(true)}>
-            <AddCircleIcon />
-          </IconButton>
+          {expanded ? (
+            <IconButton onClick={() => setExpanded(false)}>
+              <ArrowDropDownOutlinedIcon />
+            </IconButton>
+          ) : (
+            <IconButton onClick={() => setExpanded(true)}>
+              <AddCircleIcon />
+            </IconButton>
+          )}
         </div>
       </AccordionSummary>
       <AccordionDetails>
