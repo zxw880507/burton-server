@@ -78,3 +78,10 @@ export const restockQueryString = (item, pid) => {
   const { colorId, sizeId } = item;
   return `https://www.burton.com/on/demandware.store/Sites-Burton_NA-Site/en_CA/Product-Variation?dwvar_${pid}_variationColor=${colorId}&dwvar_${pid}_variationSize=${sizeId}&pid=${pid}&quantity=1`;
 };
+
+export const getFormByCheckbox = (checkbox) => {
+  return Object.keys(checkbox).reduce((a, b) => {
+    a[b] = [];
+    return a;
+  }, {});
+};
