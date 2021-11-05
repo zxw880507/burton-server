@@ -16,7 +16,6 @@ export default function SimpleAccordion(props) {
   const { fetchingData, mode } = props;
   const { productId, status } = fetchingData;
   const [expanded, setExpanded] = React.useState(false);
-  const [editForm, setEditForm] = React.useState({})
 
   const handleChange = (action) => (event) => {
     switch (action) {
