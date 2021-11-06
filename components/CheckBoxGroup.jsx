@@ -4,9 +4,8 @@ import { handleCheck, formState } from "../store/features/formSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function CheckBoxGroup(props) {
-  const { label, values, form } = props;
+  const { label, values, form, handleCheckbox } = props;
   const dispatch = useDispatch();
-
   return (
     <>
       <Typography
@@ -27,7 +26,7 @@ export default function CheckBoxGroup(props) {
               control={
                 <Checkbox
                   onChange={(e) => {
-                    dispatch(handleCheck({ label, value }));
+                    handleCheckbox({ label, value });
                   }}
                   checked={form[label].includes(value)}
                 />
