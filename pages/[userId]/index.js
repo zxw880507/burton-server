@@ -25,7 +25,7 @@ export default function UserMain() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        marginTop: "2em",
+        margin: "2rem auto",
       }}
     >
       <div style={{ width: "100%" }}>
