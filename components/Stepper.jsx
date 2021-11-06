@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import {
   TextField,
   Box,
@@ -9,11 +9,16 @@ import {
   Button,
 } from "@mui/material";
 import EditPage from "./EditPage";
+import { addProductFetch } from "../store/features/productFetchingSlice";
+import { useDispatch } from "react-redux";
 
 export default function VerticalLinearStepper(props) {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [pidInput, setPidInput] = React.useState("");
-  const [disabled, setDisabled] = React.useState(true);
+  const { setExpanded } = props;
+  const dispatch = useDispatch();
+  const [activeStep, setActiveStep] = useState(0);
+  const [pidInput, setPidInput] = useState("");
+  const [disabled, setDisabled] = useState(true);
+  const [fetchForm, setFetchForm] = useState({});
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -24,7 +29,13 @@ export default function VerticalLinearStepper(props) {
   };
 
   const handleReset = () => {
-    setActiveStep(0);
+    dispatch(addProductFetch(fetchForm))
+      .unwrap()
+      .then(() => {
+        setExpanded(false);
+        setActiveStep(0);
+        setPidInput("");
+      });
   };
 
   return (
@@ -71,6 +82,7 @@ export default function VerticalLinearStepper(props) {
             <EditPage
               mode={props.mode}
               setDisabled={setDisabled}
+              setFetchForm={setFetchForm}
               pid={pidInput}
             />
             <Box sx={{ margin: "1rem 0" }}>
@@ -78,7 +90,7 @@ export default function VerticalLinearStepper(props) {
                 <Button
                   disabled={disabled}
                   variant="contained"
-                  onClick={handleNext}
+                  onClick={handleReset}
                   sx={{ mr: ".5rem" }}
                 >
                   Finish
