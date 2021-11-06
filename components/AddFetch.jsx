@@ -35,7 +35,7 @@ export default function AddFetch(props) {
         </div>
       </AccordionSummary>
       <AccordionDetails>
-        <Stepper mode={mode} />
+        <Stepper mode={mode} setExpanded={setExpanded} />
       </AccordionDetails>
     </Accordion>
   );
