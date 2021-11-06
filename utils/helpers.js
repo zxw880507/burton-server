@@ -85,3 +85,10 @@ export const getFormByCheckbox = (checkbox) => {
     return a;
   }, {});
 };
+
+export const getFormByExistingData = (checkbox, fetchingData) => {
+  return Object.keys(checkbox).reduce((a, b) => {
+    a[b] = [...fetchingData[b]];
+    return a;
+  }, {});
+};
