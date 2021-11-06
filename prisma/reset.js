@@ -14,28 +14,28 @@ async function main() {
       email: "test1@burton.com",
     },
   });
-  //create test fetching
-  const productFetch = await prisma.productFetch.createMany({
-    data: [
-      {
-        userId: user.id,
-        productId: "W22-228251",
-        status: "IDLE",
-      },
-      {
-        userId: user.id,
-        productId: "W22-229601",
-        status: "IDLE",
-      },
-      {
-        userId: user.id,
-        productId: "W22-220611",
-        status: "IDLE",
-      },
-    ],
-  });
-  const data = { user, productFetch };
-  Object.keys(data).forEach((key) => console.log(`${[key]}:`, data[key]));
+  // //create test fetching
+  // const productFetch = await prisma.productFetch.createMany({
+  //   data: [
+  //     {
+  //       userId: user.id,
+  //       productId: "W22-228251",
+  //       status: "IDLE",
+  //     },
+  //     {
+  //       userId: user.id,
+  //       productId: "W22-229601",
+  //       status: "IDLE",
+  //     },
+  //     {
+  //       userId: user.id,
+  //       productId: "W22-220611",
+  //       status: "IDLE",
+  //     },
+  //   ],
+  // });
+  // const data = { user, productFetch };
+  // Object.keys(data).forEach((key) => console.log(`${[key]}:`, data[key]));
 }
 
 main()
