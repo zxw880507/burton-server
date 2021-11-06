@@ -26,6 +26,36 @@ const handler = nc()
     } catch (err) {
       res.status(500).json({ errorMessage: "Fetching failed" });
     }
+  })
+  .post(async (req, res) => {
+    const { fetchForm } = req.body;
+    const userId = "6185977eac1583b1d33d1f4a";
+    try {
+      const newFetch = await prisma.productFetch.create({
+        data: {
+          status: "IDLE",
+          userId,
+          ...fetchForm,
+        },
+      });
+      res.status(200).json(newFetch);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ errorMessage: `Failed to create a new fetch` });
+    }
+  })
+  .delete(async (req, res) => {
+    const { id } = req.body;
+    try {
+      const deletedFetch = await prisma.productFetch.delete({
+        where: {
+          id,
+        },
+      });
+      res.status(200).json(deletedFetch);
+    } catch (err) {
+      res.status(500).json({ errorMessage: `Failed to delete fetch ${id}` });
+    }
   });
 
 export default handler;
