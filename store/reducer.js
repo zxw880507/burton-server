@@ -1,6 +1,5 @@
 import { combineReducers } from "redux";
 import productReducer from "./features/productSlice";
-import checkboxReducer from "./features/checkboxSlice";
 import demandReducer from "./features/demandSlice";
 import phoneReducer from "./features/phoneSlice";
 import emailReducer from "./features/emailSlice";
@@ -9,7 +8,6 @@ import productFetchingReducer from "./features/productFetchingSlice";
 
 const appReducer = combineReducers({
   productState: productReducer,
-  checkboxState: checkboxReducer,
   demandState: demandReducer,
   phoneState: phoneReducer,
   emailState: emailReducer,
