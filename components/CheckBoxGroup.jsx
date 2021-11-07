@@ -1,11 +1,8 @@
 import { Grid, FormControlLabel, Checkbox, Typography } from "@mui/material";
-import { useState, useEffect } from "react";
-import { handleCheck, formState } from "../store/features/formSlice";
-import { useDispatch, useSelector } from "react-redux";
 
 export default function CheckBoxGroup(props) {
   const { label, values, form, handleCheckbox } = props;
-  const dispatch = useDispatch();
+
   return (
     <>
       <Typography

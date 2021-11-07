@@ -22,18 +22,6 @@ export default function SimpleAccordion(props) {
   const matches = useMediaQuery("(min-width:600px)");
   const dispatch = useDispatch();
 
-  const handleChange = (action) => (event) => {
-    switch (action) {
-      case "EDIT":
-        setExpanded(true);
-        break;
-      case "CANCEL":
-        setExpanded(false);
-        break;
-      default:
-        break;
-    }
-  };
   return (
     <div style={{ marginTop: ".5rem" }}>
       <Accordion expanded={expanded} sx={{ bgcolor: "#cccccc36" }}>
@@ -55,7 +43,7 @@ export default function SimpleAccordion(props) {
           }}
         >
           <Typography
-            sx={{ flexShrink: 0, textAlign: "center", fontSize: "1rem" }}
+            sx={{ flexShrink: 0, textAlign: "center", fontSize: ".9rem" }}
           >
             {productName}
           </Typography>
@@ -88,7 +76,7 @@ export default function SimpleAccordion(props) {
             <IconButton
               color="primary"
               aria-label="edit"
-              onClick={handleChange("EDIT")}
+              onClick={() => setExpanded(true)}
               disabled={expanded}
             >
               <EditIcon />
@@ -107,9 +95,9 @@ export default function SimpleAccordion(props) {
         <AccordionDetails>
           <EditPage
             pid={productId}
-            handleChange={handleChange}
             mode={mode}
             fetchingData={fetchingData}
+            setExpanded={setExpanded}
           />
         </AccordionDetails>
       </Accordion>
