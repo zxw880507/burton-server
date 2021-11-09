@@ -1,13 +1,11 @@
 import { Container, Button, Fab } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { demandState } from "../store/features/demandSlice";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 
 export default function Result() {
-  const router = useRouter();
   const dispatch = useDispatch();
   const { demand } = useSelector(demandState);
   return (
@@ -67,9 +65,9 @@ export default function Result() {
       >
         <Fab
           variant="extended"
-          onClick={() => {
-            router.push("/").then(() => dispatch({ type: "RESET" }));
-          }}
+          // onClick={() => {
+          //   router.push("/").then(() => dispatch({ type: "RESET" }));
+          // }}
         >
           <HomeIcon />
         </Fab>

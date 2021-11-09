@@ -9,11 +9,11 @@ async function main() {
   await prisma.user.deleteMany({});
 
   //create test user
-  const user = await prisma.user.create({
-    data: {
-      email: "test1@burton.com",
-    },
-  });
+  // const user = await prisma.user.create({
+  //   data: {
+  //     email: "test1@burton.com",
+  //   },
+  // });
   // //create test fetching
   // const productFetch = await prisma.productFetch.createMany({
   //   data: [

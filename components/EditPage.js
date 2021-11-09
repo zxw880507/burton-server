@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Grid,
   Typography,
@@ -9,14 +9,12 @@ import {
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import CheckBoxGroup from "./CheckBoxGroup";
-import { getPhoneNumber } from "../store/features/phoneSlice";
-import { getEmail } from "../store/features/emailSlice";
-import { useRouter } from "next/router";
 import { fetchRestock } from "../store/features/restockSlice";
 import useForm from "../lib/hooks/useForm";
+import { updateProductFetch } from "../store/features/productFetchingSlice";
 
 export default function EditPage(props) {
-  const { pid, handleChange, mode, setDisabled, setFetchForm, fetchingData } =
+  const { pid, mode, setDisabled, setFetchForm, fetchingData, setExpanded } =
     props;
   const router = useRouter();
   const dispatch = useDispatch();
@@ -27,6 +25,7 @@ export default function EditPage(props) {
     handleCheckbox,
     fetchConfig,
     handleConfig,
+    resetFetchData,
   } = useForm({ pid, fetchingData });
 
   const unselected = (form) => {
@@ -76,11 +75,11 @@ export default function EditPage(props) {
             },
           }}
           disabled={unselected(form)}
-          onClick={() => {
-            router
-              .push(`${router.asPath}/query`)
-              .then(dispatch(fetchRestock(pid)));
-          }}
+          // onClick={() => {
+          //   router
+          //     .push(`${router.asPath}/query`)
+          //     .then(dispatch(fetchRestock(pid)));
+          // }}
         >
           check arriving
         </Button>
@@ -119,8 +118,19 @@ export default function EditPage(props) {
             sx={{ marginRight: "2rem" }}
             disabled={unselected(form)}
             onClick={() => {
-              dispatch(getPhoneNumber(phoneNumber));
-              dispatch(getEmail(email));
+              dispatch(
+                updateProductFetch({
+                  fetchForm: {
+                    productId: pid,
+                    productName,
+                    ...form,
+                    ...fetchConfig,
+                  },
+                  id: fetchingData.id,
+                })
+              )
+                .unwrap()
+                .then(() => setExpanded(false));
             }}
           >
             submit
@@ -128,7 +138,10 @@ export default function EditPage(props) {
           <Button
             variant="contained"
             color="warning"
-            onClick={handleChange("CANCEL")}
+            onClick={() => {
+              setExpanded(false);
+              resetFetchData(checkbox, fetchingData);
+            }}
           >
             back
           </Button>
