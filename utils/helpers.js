@@ -1,3 +1,4 @@
+import axios from "axios";
 import { SegmentedMessage } from "sms-segments-calculator";
 
 export const dataReformat = (arr) => {
@@ -91,4 +92,20 @@ export const getFormByExistingData = (checkbox, fetchingData) => {
     a[b] = [...fetchingData[b]];
     return a;
   }, {});
+};
+
+export const getDemandFetch = async (pid, form) => {
+  try {
+    const response = await axios(
+      `https://www.burton.com/on/demandware.store/Sites-Burton_NA-Site/en_CA/Product-GetVariationJSON?pid=${pid}`
+    );
+    const productArray = dataReformat(
+      response.data.data.variations.variationValues
+    );
+    const sortByForm = sortDemand(productArray, form);
+    const data = isAvailable(sortByForm);
+    return data;
+  } catch (error) {
+    throw error;
+  }
 };
