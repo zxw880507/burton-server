@@ -30,8 +30,8 @@ const handler = async (req, res) => {
           if (curr.status !== "FETCHING") {
             clearInterval(fetchLoop);
           } else {
-            const data = await getDemandFetch(pid, form);
-            if (data.length) {
+            const demandData = await getDemandFetch(pid, form);
+            if (demandData.length) {
               const doneFetch = await prisma.productFetch.update({
                 where: {
                   id: fetchId,
