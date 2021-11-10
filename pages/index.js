@@ -1,46 +1,62 @@
-import { useState } from "react";
-import { Container, Button, TextField } from "@mui/material";
-import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import { Container, AppBar, Toolbar, Button, Typography } from "@mui/material";
+import AuthForm from "../components/AuthForm";
+import { useDispatch, useSelector } from "react-redux";
+import { authState, getSession } from "../store/features/authSlice";
+import router from "next/router";
 
 function HomePage() {
-  const router = useRouter();
-  const [input, setInput] = useState("");
+  const [formType, setFormType] = useState("LOGIN");
+  const dispatch = useDispatch();
+  const { status } = useSelector(authState);
 
-  return (
+  const handleClick = (type) => (event) => {
+    setFormType(type);
+  };
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(getSession())
+        .unwrap()
+        .then((res) => router.push(`${res.id}`))
+        .catch((e) => console.log(e));
+    }
+  }, [dispatch, status]);
+  return status === "failed" ? (
     <Container
-      maxWidth="sm"
+      maxWidth="md"
       sx={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        marginTop: "2em",
+        mt: ".5rem",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <TextField
-          label="product id"
-          variant="standard"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <Button
-          variant="outlined"
-          style={{ marginLeft: "1rem" }}
-          onClick={() => {
-            router.push(`/${input}`);
-          }}
-        >
-          Confirm
-        </Button>
-      </div>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            BurtonStock
+          </Typography>
+          <Button
+            color="inherit"
+            onClick={handleClick("SIGNUP")}
+            sx={{ opacity: formType === "SIGNUP" ? "1" : ".2" }}
+          >
+            Signup
+          </Button>
+          <Button
+            color="inherit"
+            onClick={handleClick("LOGIN")}
+            sx={{ opacity: formType === "LOGIN" ? "1" : ".2" }}
+          >
+            Login
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <AuthForm formType={formType} />
     </Container>
-  );
+  ) : null;
 }
 
 export default HomePage;
