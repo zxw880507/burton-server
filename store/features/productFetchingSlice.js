@@ -72,6 +72,22 @@ export const deleteProductFetch = createAsyncThunk(
   }
 );
 
+export const fetchProduct = createAsyncThunk(
+  "fetchProduct",
+  async ({ id, action }, { rejectWithValue }) => {
+    try {
+      const res = await axios.put(`/api/fetchingAction/${id}`, { action });
+      return res.data;
+    } catch (error) {
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+
 const initialState = {
   productFetchingList: [],
   status: "idle",
@@ -147,6 +163,26 @@ const productFetchingSlice = createSlice({
         state.productFetchingList.splice(index, 1);
       })
       .addCase(deleteProductFetch.rejected, (state, action) => {
+        state.status = "failed";
+        if (action.payload) {
+          state.error = action.payload.errorMessage;
+        } else {
+          state.error = action.error.message;
+        }
+      })
+      .addCase(fetchProduct.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchProduct.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const { id } = action.payload;
+        const index = state.productFetchingList.findIndex((el) => el.id === id);
+        if (index === -1) {
+          return state;
+        }
+        state.productFetchingList.splice(index, 1, action.payload);
+      })
+      .addCase(fetchProduct.rejected, (state, action) => {
         state.status = "failed";
         if (action.payload) {
           state.error = action.payload.errorMessage;
