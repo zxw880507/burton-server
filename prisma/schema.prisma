@@ -25,16 +25,31 @@ model User {
 }
 
 model ProductFetch {
-  id          String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  productId   String   @unique @db.String
-  productName String   @db.String
+  id          String       @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  productId   String       @unique @db.String
+  productName String       @db.String
   status      Status
-  userId      String   @db.ObjectId
-  user        User     @relation(fields: [userId], references: [id])
-  color       String[] @db.Array(String)
-  size        String[] @db.Array(String)
-  interval    Int      @default(5) @db.Int
-  phoneNumber String?  @db.String
-  email       String?  @db.String
-  createdAt   DateTime @default(now())
+  userId      String       @db.ObjectId
+  user        User         @relation(fields: [userId], references: [id])
+  color       String[]     @db.Array(String)
+  size        String[]     @db.Array(String)
+  interval    Int          @default(5) @db.Int
+  phoneNumber String?      @db.String
+  email       String?      @db.String
+  createdAt   DateTime     @default(now())
+  demandItem  DemandItem[]
+}
+
+model DemandItem {
+  id             String       @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  productFetchId String       @unique @db.ObjectId
+  productFetch   ProductFetch @relation(fields: [productFetchId], references: [id])
+  itemId         String       @db.String
+  name           String       @db.String
+  sizeId         String       @db.String
+  size           String       @db.String
+  colorId        String       @db.String
+  color          String       @db.String
+  available      String       @db.String
+  addToCartLink  String       @db.String
 }
