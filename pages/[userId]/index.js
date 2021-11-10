@@ -13,6 +13,7 @@ import {
   setLogout,
 } from "../../store/features/authSlice";
 import { useRouter } from "next/router";
+import channel from "../../lib/pusherClient";
 
 export default function UserMain() {
   const dispatch = useDispatch();
@@ -46,7 +47,13 @@ export default function UserMain() {
       dispatch(getProductFetchingList());
     }
   }, [status, dispatch]);
-  return (
+
+  useEffect(() => {
+    channel.bind("my-event", (data) => {
+      console.log(data);
+    });
+  }, []);
+  return status === "succeeded" ? (
     <Container
       maxWidth="md"
       sx={{
@@ -75,5 +82,5 @@ export default function UserMain() {
         <AddFetch mode="ADD" />
       </div>
     </Container>
-  );
+  ) : null;
 }
