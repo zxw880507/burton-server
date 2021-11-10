@@ -14,13 +14,12 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import { setSignup, authState } from "../store/features/authSlice";
+import { setSignup, setLogin, authState } from "../store/features/authSlice";
 
 export default function AuthForm(props) {
   const { formType } = props;
   const router = useRouter();
   const dispatch = useDispatch();
-  const { auth, status, error } = useSelector(authState);
   const [showPassword, setShowPassword] = useState({
     password: false,
     repassword: false,
@@ -55,8 +54,16 @@ export default function AuthForm(props) {
         case "SIGNUP":
           dispatch(setSignup(authInputs))
             .unwrap()
-            .then(() => {
-              router.push(`/${auth.id}`);
+            .then((res) => {
+              router.push(`/${res.id}`);
+            })
+            .catch((e) => setErrors(e.errorMessage));
+          break;
+        case "LOGIN":
+          dispatch(setLogin(authInputs))
+            .unwrap()
+            .then((res) => {
+              router.push(`/${res.id}`);
             })
             .catch((e) => setErrors(e.errorMessage));
           break;
@@ -93,105 +100,97 @@ export default function AuthForm(props) {
       setErrors({});
     };
   }, [formType]);
-  return (
-    authInputs && (
-      <Box
-        component="form"
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          padding: "2rem",
-          alignItems: "center",
-        }}
-        onSubmit={handleSubmit(formType)}
-        onFocus={handleFocus}
-      >
+  return authInputs && errors ? (
+    <Box
+      component="form"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        padding: "2rem",
+        alignItems: "center",
+      }}
+      onSubmit={handleSubmit(formType)}
+      onFocus={handleFocus}
+    >
+      <FormControl sx={{ mt: "1rem", width: "25ch" }} variant="standard">
+        <InputLabel htmlFor="standard-adornment-email">Email</InputLabel>
+        <Input
+          id="standard-adornment-email"
+          type="email"
+          value={authInputs.email || ""}
+          onChange={handleChange("email")}
+          autoComplete="off"
+        />
+        <FormHelperText error={errors.email}>{errors.email}</FormHelperText>
+      </FormControl>
+      <FormControl sx={{ mt: "1rem", width: "25ch" }} variant="standard">
+        <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
+        <Input
+          id="standard-adornment-password"
+          type={showPassword.password ? "text" : "password"}
+          value={authInputs.password || ""}
+          onChange={handleChange("password")}
+          autoComplete="off"
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="toggle password visibility"
+                onClick={handleClickShowPassword("password")}
+                onMouseDown={handleMouseDownPassword}
+              >
+                {showPassword.password ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          }
+        />
+        <FormHelperText error={errors.password}>
+          {errors.password}
+        </FormHelperText>
+      </FormControl>
+      {formType === "SIGNUP" && (
         <FormControl sx={{ mt: "1rem", width: "25ch" }} variant="standard">
-          <InputLabel htmlFor="standard-adornment-email">Email</InputLabel>
-          <Input
-            id="standard-adornment-email"
-            type="email"
-            value={authInputs.email || ""}
-            onChange={handleChange("email")}
-            autoComplete="off"
-          />
-          <FormHelperText error={errors.email}>{errors.email}</FormHelperText>
-        </FormControl>
-        <FormControl sx={{ mt: "1rem", width: "25ch" }} variant="standard">
-          <InputLabel htmlFor="standard-adornment-password">
-            Password
+          <InputLabel htmlFor="standard-adornment-repassword">
+            Re-Password
           </InputLabel>
           <Input
-            id="standard-adornment-password"
-            type={showPassword.password ? "text" : "password"}
-            value={authInputs.password || ""}
-            onChange={handleChange("password")}
+            id="standard-adornment-repassword"
+            type={showPassword.repassword ? "text" : "password"}
+            value={authInputs.repassword || ""}
+            onChange={handleChange("repassword")}
             autoComplete="off"
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
                   aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword("password")}
+                  onClick={handleClickShowPassword("repassword")}
                   onMouseDown={handleMouseDownPassword}
                 >
-                  {showPassword.password ? <VisibilityOff /> : <Visibility />}
+                  {showPassword.repassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
             }
           />
-          <FormHelperText error={errors.password}>
-            {errors.password}
+          <FormHelperText error={errors.repassword}>
+            {errors.repassword}
           </FormHelperText>
         </FormControl>
-        {formType === "SIGNUP" && (
-          <FormControl sx={{ mt: "1rem", width: "25ch" }} variant="standard">
-            <InputLabel htmlFor="standard-adornment-repassword">
-              Re-Password
-            </InputLabel>
-            <Input
-              id="standard-adornment-repassword"
-              type={showPassword.repassword ? "text" : "password"}
-              value={authInputs.repassword || ""}
-              onChange={handleChange("repassword")}
-              autoComplete="off"
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword("repassword")}
-                    onMouseDown={handleMouseDownPassword}
-                  >
-                    {showPassword.repassword ? (
-                      <VisibilityOff />
-                    ) : (
-                      <Visibility />
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              }
-            />
-            <FormHelperText error={errors.repassword}>
-              {errors.repassword}
-            </FormHelperText>
-          </FormControl>
-        )}
-        <Collapse in={isEmpty} timeout={{ appear: 300, enter: 200, exit: 100 }}>
-          <Alert
-            variant="outlined"
-            severity="error"
-            sx={{ mt: "1rem", alignItems: "center" }}
-          >
-            Error: Any field can not be empty!
-          </Alert>
-        </Collapse>
-        <Button
-          variant="contained"
-          sx={{ mt: "2rem", width: "25ch" }}
-          type="submit"
+      )}
+      <Collapse in={isEmpty} timeout={{ appear: 300, enter: 200, exit: 100 }}>
+        <Alert
+          variant="outlined"
+          severity="error"
+          sx={{ mt: "1rem", alignItems: "center" }}
         >
-          {formType}
-        </Button>
-      </Box>
-    )
-  );
+          Error: Any field can not be empty!
+        </Alert>
+      </Collapse>
+      <Button
+        variant="contained"
+        sx={{ mt: "2rem", width: "25ch" }}
+        type="submit"
+      >
+        {formType}
+      </Button>
+    </Box>
+  ) : null;
 }
