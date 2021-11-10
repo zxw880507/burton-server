@@ -12,7 +12,10 @@ import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditPage from "./EditPage";
-import { deleteProductFetch } from "../store/features/productFetchingSlice";
+import {
+  deleteProductFetch,
+  fetchProduct,
+} from "../store/features/productFetchingSlice";
 import { useDispatch } from "react-redux";
 
 export default function SimpleAccordion(props) {
@@ -63,13 +66,19 @@ export default function SimpleAccordion(props) {
               alignItems: "center",
             }}
           >
-            <IconButton color="info" aria-label="start" disabled={expanded}>
+            <IconButton
+              color="info"
+              aria-label="start"
+              disabled={expanded || status === "FETCHING"}
+              onClick={() => dispatch(fetchProduct({ id, action: "START" }))}
+            >
               <PlayCircleOutlineIcon />
             </IconButton>
             <IconButton
               color="warning"
               aria-label="stop"
               disabled={status === "IDLE"}
+              onClick={() => dispatch(fetchProduct({ id, action: "STOP" }))}
             >
               <StopCircleIcon />
             </IconButton>
@@ -77,7 +86,7 @@ export default function SimpleAccordion(props) {
               color="primary"
               aria-label="edit"
               onClick={() => setExpanded(true)}
-              disabled={expanded}
+              disabled={expanded || status === "FETCHING"}
             >
               <EditIcon />
             </IconButton>
@@ -87,6 +96,7 @@ export default function SimpleAccordion(props) {
               onClick={() => {
                 dispatch(deleteProductFetch(id));
               }}
+              disabled={status === "FETCHING"}
             >
               <DeleteIcon />
             </IconButton>
