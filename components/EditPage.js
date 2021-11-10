@@ -16,7 +16,6 @@ import { updateProductFetch } from "../store/features/productFetchingSlice";
 export default function EditPage(props) {
   const { pid, mode, setDisabled, setFetchForm, fetchingData, setExpanded } =
     props;
-  const router = useRouter();
   const dispatch = useDispatch();
   const {
     checkbox,
