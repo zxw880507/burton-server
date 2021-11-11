@@ -14,6 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AspectRatioIcon from "@mui/icons-material/AspectRatio";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import EditPage from "./EditPage";
+import Result from "./Result";
 import {
   deleteProductFetch,
   fetchProduct,
@@ -22,21 +23,19 @@ import { useDispatch } from "react-redux";
 
 export default function SimpleAccordion(props) {
   const { fetchingData, mode } = props;
-  const { id, productId, status, productName } = fetchingData;
+  const { id, productId, status, productName, demandItem } = fetchingData;
   const [expanded, setExpanded] = useState(false);
   const matches = useMediaQuery("(min-width:600px)");
   const dispatch = useDispatch();
 
   return (
     <div style={{ marginTop: ".5rem" }}>
-      <Accordion
-        expanded={expanded}
-        sx={{ bgcolor: status === "SUCCEEDED" ? "#4caf50" : "#cccccc36" }}
-      >
+      <Accordion expanded={expanded}>
         <AccordionSummary
           aria-controls="panel1bh-content"
           id="panel1bh-header"
           sx={{
+            bgcolor: status === "SUCCEEDED" ? "#4caf50" : "#cccccc36",
             "& .MuiAccordionSummary-content": matches
               ? {
                   display: "grid",
@@ -71,8 +70,6 @@ export default function SimpleAccordion(props) {
           </Typography>
           <div
             style={{
-              // display: "flex",
-              // justifyContent: "space-evenly",
               display: "grid",
               gridTemplateColumns: "3fr 1fr",
               alignItems: "center",
@@ -110,10 +107,8 @@ export default function SimpleAccordion(props) {
             ) : (
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <IconButton
-                  color="primary"
                   aria-label="expand"
-                  onClick={() => setExpanded(true)}
-                  disabled={expanded || status === "FETCHING"}
+                  onClick={() => setExpanded((prev) => !prev)}
                 >
                   {expanded ? (
                     <ExpandLessIcon />
@@ -137,13 +132,17 @@ export default function SimpleAccordion(props) {
             </div>
           </div>
         </AccordionSummary>
-        <AccordionDetails>
-          <EditPage
-            pid={productId}
-            mode={mode}
-            fetchingData={fetchingData}
-            setExpanded={setExpanded}
-          />
+        <AccordionDetails sx={{ bgcolor: "#cccccc36" }}>
+          {status !== "SUCCEEDED" ? (
+            <EditPage
+              pid={productId}
+              mode={mode}
+              fetchingData={fetchingData}
+              setExpanded={setExpanded}
+            />
+          ) : (
+            <Result demandItem={demandItem} />
+          )}
         </AccordionDetails>
       </Accordion>
     </div>
