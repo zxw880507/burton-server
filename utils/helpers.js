@@ -3,13 +3,13 @@ import { SegmentedMessage } from "sms-segments-calculator";
 
 export const dataReformat = (arr) => {
   return arr.map((el) => ({
-    id: el.ID,
+    itemId: el.ID,
     name: el.name,
     sizeId: el.variationSize.ID,
     size: el.variationSize.displayName,
     colorId: el.variationColor.ID,
     color: el.variationColor.displayName,
-    available: el.status.available,
+    available: el.status.available && !el.status.backinstock,
     addToCartLink: el.addToCartLink,
   }));
 };
@@ -108,4 +108,13 @@ export const getDemandFetch = async (pid, form) => {
   } catch (error) {
     throw error;
   }
+};
+
+export const serializeForm = (form) => {
+  return Object.keys(form)
+    .map((key) => {
+      const str = form[key].map((val) => `${key}=${val}`).join("&");
+      return str;
+    })
+    .join("&");
 };
