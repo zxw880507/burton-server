@@ -14,9 +14,7 @@ import {
   setLogout,
 } from "../../store/features/authSlice";
 import { useRouter } from "next/router";
-// import Pusher from "pusher-js";
-import pusher from "../../lib/pusherClient";
-// import channel from "../../lib/pusherClient";
+import Pusher from "pusher-js";
 
 export default function UserMain() {
   const dispatch = useDispatch();
@@ -52,8 +50,14 @@ export default function UserMain() {
   }, [status, dispatch]);
 
   useEffect(() => {
+    Pusher.logToConsole = process.env.NODE_ENV !== "production";
+    const pusher = new Pusher(process.env.PUSHER_KEY, {
+      cluster: process.env.PUSHER_CLUSTER,
+    });
+
+    const channel = pusher.subscribe("burton-stock");
     if (userId) {
-      pusher.bind(userId, (data) => {
+      channel.bind(userId, (data) => {
         console.log(data);
         dispatch(updateFetchingList(data));
       });
