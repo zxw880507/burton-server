@@ -74,9 +74,13 @@ export const deleteProductFetch = createAsyncThunk(
 
 export const fetchProduct = createAsyncThunk(
   "fetchProduct",
-  async ({ id, action }, { rejectWithValue }) => {
+  async ({ id, action }, { getState, rejectWithValue }) => {
+    const userId = getState().authState.auth.id;
     try {
-      const res = await axios.put(`/api/fetchingAction/${id}`, { action });
+      const res = await axios.put(`/api/fetchingAction/${id}`, {
+        userId,
+        action,
+      });
       return res.data;
     } catch (error) {
       if (!error.response) {
@@ -87,7 +91,6 @@ export const fetchProduct = createAsyncThunk(
   }
 );
 
-
 const initialState = {
   productFetchingList: [],
   status: "idle",
@@ -97,7 +100,16 @@ const initialState = {
 const productFetchingSlice = createSlice({
   name: "productFetching",
   initialState,
-  reducers: {},
+  reducers: {
+    updateFetchingList(state, action) {
+      const { id } = action.payload;
+      const index = state.productFetchingList.findIndex((el) => el.id === id);
+      if (index === -1) {
+        return state;
+      }
+      state.productFetchingList.splice(index, 1, action.payload);
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(getProductFetchingList.pending, (state) => {
@@ -194,5 +206,5 @@ const productFetchingSlice = createSlice({
 });
 
 export default productFetchingSlice.reducer;
-
+export const { updateFetchingList } = productFetchingSlice.actions;
 export const productFetchingState = (state) => state.productFetchingState;
