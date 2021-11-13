@@ -1,7 +1,8 @@
 import { prisma } from "../../../lib/prisma";
 import bcrypt from "bcryptjs";
+import withSession from "../../../lib/session";
 
-export default async function handler(req, res) {
+export default withSession(async (req, res) => {
   const { email, password, repassword } = req.body;
   const errorMessage = {};
   const exist = await prisma.user.findUnique({
@@ -39,6 +40,8 @@ export default async function handler(req, res) {
           email: true,
         },
       });
+      req.session.user = newUser;
+      await req.session.save();
       res.status(200).json(newUser);
     } catch (error) {
       console.log(error);
@@ -47,4 +50,4 @@ export default async function handler(req, res) {
       });
     }
   }
-}
+});

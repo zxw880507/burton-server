@@ -4,7 +4,7 @@ import { getDemandFetch } from "../../../utils/helpers";
 
 const handler = async (req, res) => {
   const { fetchId } = req.query;
-  const { action } = req.body;
+  const { userId, action } = req.body;
   switch (action) {
     case "START":
       try {
@@ -18,6 +18,7 @@ const handler = async (req, res) => {
         });
         const form = { color: currentFetch.color, size: currentFetch.size };
         const pid = currentFetch.productId;
+        const interval = currentFetch.interval;
         const fetchLoop = setInterval(async () => {
           const curr = await prisma.productFetch.findUnique({
             where: {
@@ -32,6 +33,12 @@ const handler = async (req, res) => {
           } else {
             const demandData = await getDemandFetch(pid, form);
             if (demandData.length) {
+              await prisma.demandItem.createMany({
+                data: demandData.map((item) => ({
+                  ...item,
+                  productFetchId: fetchId,
+                })),
+              });
               const doneFetch = await prisma.productFetch.update({
                 where: {
                   id: fetchId,
@@ -39,14 +46,14 @@ const handler = async (req, res) => {
                 data: {
                   status: "SUCCEEDED",
                 },
+                include: {
+                  demandItem: true,
+                },
               });
-              await pusher.trigger("my-channel", "my-event", {
-                doneFetch,
-                demandData,
-              });
+              await pusher.trigger("burton-stock", userId, doneFetch);
             }
           }
-        }, 5000);
+        }, interval * 1000);
         res.status(200).json(currentFetch);
       } catch (err) {
         res

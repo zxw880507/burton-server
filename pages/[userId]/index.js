@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getProductFetchingList,
   productFetchingState,
+  updateFetchingList,
 } from "../../store/features/productFetchingSlice";
 import {
   authState,
@@ -13,7 +14,9 @@ import {
   setLogout,
 } from "../../store/features/authSlice";
 import { useRouter } from "next/router";
-import channel from "../../lib/pusherClient";
+// import Pusher from "pusher-js";
+import pusher from "../../lib/pusherClient";
+// import channel from "../../lib/pusherClient";
 
 export default function UserMain() {
   const dispatch = useDispatch();
@@ -21,6 +24,7 @@ export default function UserMain() {
   const { status } = useSelector(authState);
 
   const router = useRouter();
+  const { userId } = router.query;
 
   const handleClick = (event) => {
     dispatch(setLogout())
@@ -29,7 +33,6 @@ export default function UserMain() {
   };
 
   useEffect(() => {
-    const { userId } = router.query;
     if (status === "idle") {
       dispatch(getSession())
         .unwrap()
@@ -40,7 +43,7 @@ export default function UserMain() {
         })
         .catch(() => router.push("/"));
     }
-  }, [dispatch, router, status]);
+  }, [dispatch, router, status, userId]);
 
   useEffect(() => {
     if (status === "succeeded") {
@@ -49,10 +52,16 @@ export default function UserMain() {
   }, [status, dispatch]);
 
   useEffect(() => {
-    channel.bind("my-event", (data) => {
-      console.log(data);
-    });
-  }, []);
+    if (userId) {
+      pusher.bind(userId, (data) => {
+        console.log(data);
+        dispatch(updateFetchingList(data));
+      });
+    }
+    return () => {
+      pusher.disconnect();
+    };
+  }, [dispatch, userId]);
   return status === "succeeded" ? (
     <Container
       maxWidth="md"

@@ -8,6 +8,7 @@ const handler = nc()
   .use(cors())
   .get(async (req, res) => {
     const { pid, item } = req.query;
+
     const itemParse = JSON.parse(item);
     const fetchURL = restockQueryString(itemParse, pid);
     try {

@@ -16,6 +16,9 @@ const handler = nc()
         orderBy: {
           createdAt: "asc",
         },
+        include: {
+          demandItem: true,
+        },
       });
       res.status(200).json(productFetchingList);
     } catch (err) {
@@ -32,6 +35,9 @@ const handler = nc()
           userId,
           ...fetchForm,
         },
+        include: {
+          demandItem: true,
+        },
       });
       res.status(200).json(newFetch);
     } catch (err) {
@@ -47,6 +53,9 @@ const handler = nc()
           id,
         },
         data: fetchForm,
+        include: {
+          demandItem: true,
+        },
       });
       res.status(200).json(updatedFetch);
     } catch (err) {
@@ -57,6 +66,11 @@ const handler = nc()
   .delete(async (req, res) => {
     const { id } = req.body;
     try {
+      await prisma.demandItem.deleteMany({
+        where: {
+          productFetchId: id,
+        },
+      });
       const deletedFetch = await prisma.productFetch.delete({
         where: {
           id,
@@ -64,6 +78,7 @@ const handler = nc()
       });
       res.status(200).json(deletedFetch);
     } catch (err) {
+      console.log(err);
       res.status(500).json({ errorMessage: `Failed to delete fetch ${id}` });
     }
   });

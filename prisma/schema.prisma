@@ -50,6 +50,6 @@ model DemandItem {
   size           String       @db.String
   colorId        String       @db.String
   color          String       @db.String
-  available      String       @db.String
+  available      Boolean      @db.Bool
   addToCartLink  String       @db.String
 }

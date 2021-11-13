@@ -7,10 +7,12 @@ import {
   Box,
   LinearProgress,
 } from "@mui/material";
+import Link from "next/link";
 import { useDispatch } from "react-redux";
 import CheckBoxGroup from "./CheckBoxGroup";
 import { fetchRestock } from "../store/features/restockSlice";
 import useForm from "../lib/hooks/useForm";
+import { serializeForm } from "../utils/helpers";
 import { updateProductFetch } from "../store/features/productFetchingSlice";
 
 export default function EditPage(props) {
@@ -74,13 +76,10 @@ export default function EditPage(props) {
             },
           }}
           disabled={unselected(form)}
-          // onClick={() => {
-          //   router
-          //     .push(`${router.asPath}/query`)
-          //     .then(dispatch(fetchRestock(pid)));
-          // }}
         >
-          check arriving
+          <Link href={`restock/${pid}?${serializeForm(form)}`}>
+            <a target="_blank">check arriving</a>
+          </Link>
         </Button>
       </div>
       <div style={{ display: "grid", gap: "1rem", marginTop: "1rem" }}>
