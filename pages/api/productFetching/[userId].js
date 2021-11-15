@@ -28,6 +28,7 @@ const handler = nc()
   .post(async (req, res) => {
     const { userId } = req.query;
     const { fetchForm } = req.body;
+
     try {
       const newFetch = await prisma.productFetch.create({
         data: {

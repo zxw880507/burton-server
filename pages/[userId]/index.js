@@ -58,8 +58,10 @@ export default function UserMain() {
     const channel = pusher.subscribe("burton-stock");
     if (userId) {
       channel.bind(userId, (data) => {
-        console.log(data);
         dispatch(updateFetchingList(data));
+      });
+      channel.bind("handle-error", (err) => {
+        alert(err);
       });
     }
     return () => {

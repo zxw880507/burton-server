@@ -90,6 +90,7 @@ export default function EditPage(props) {
           variant="standard"
           value={fetchConfig.interval}
           onChange={(e) => handleConfig("interval", Number(e.target.value))}
+          required
         />
         <TextField
           id="phone-number"
