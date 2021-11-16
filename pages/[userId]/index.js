@@ -50,14 +50,16 @@ export default function UserMain() {
   }, [status, dispatch]);
 
   useEffect(() => {
-    Pusher.logToConsole = process.env.NODE_ENV !== "production";
-    const pusher = new Pusher(process.env.PUSHER_KEY, {
-      cluster: process.env.PUSHER_CLUSTER,
-    });
-
-    const channel = pusher.subscribe("burton-stock");
+    // Pusher.logToConsole = process.env.NODE_ENV !== "production";
     if (userId) {
+      Pusher.logToConsole = true;
+      const pusher = new Pusher(process.env.PUSHER_KEY, {
+        cluster: process.env.PUSHER_CLUSTER,
+      });
+      const channel = pusher.subscribe("burton-stock");
+
       channel.bind(userId, (data) => {
+        console.log(data);
         dispatch(updateFetchingList(data));
       });
       channel.bind("handle-error", (err) => {
