@@ -1,6 +1,8 @@
 import { prisma } from "../../../lib/prisma";
 import pusher from "../../../lib/pusher";
-import { getDemandFetch } from "../../../utils/helpers";
+import sendMsg from "../../../lib/twilio";
+import sendEmail from "../../../lib/mailer";
+import { getDemandFetch, getMsgArray } from "../../../utils/helpers";
 
 const handler = async (req, res) => {
   const { fetchId } = req.query;
@@ -33,24 +35,44 @@ const handler = async (req, res) => {
           } else {
             const demandData = await getDemandFetch(pid, form);
             if (demandData.length) {
-              await prisma.demandItem.createMany({
-                data: demandData.map((item) => ({
-                  ...item,
-                  productFetchId: fetchId,
-                })),
-              });
-              const doneFetch = await prisma.productFetch.update({
-                where: {
-                  id: fetchId,
-                },
-                data: {
-                  status: "SUCCEEDED",
-                },
-                include: {
-                  demandItem: true,
-                },
-              });
-              await pusher.trigger("burton-stock", userId, doneFetch);
+              try {
+                await prisma.demandItem.createMany({
+                  data: demandData.map((item) => ({
+                    ...item,
+                    productFetchId: fetchId,
+                  })),
+                });
+                const doneFetch = await prisma.productFetch.update({
+                  where: {
+                    id: fetchId,
+                  },
+                  data: {
+                    status: "SUCCEEDED",
+                  },
+                  include: {
+                    demandItem: true,
+                  },
+                });
+                await pusher.trigger("burton-stock", userId, doneFetch);
+
+                const { phoneNumber, email } = doneFetch;
+                if (phoneNumber) {
+                  const messages = getMsgArray(demandData, 1500);
+                  const promiseArr = messages.map((msg) =>
+                    sendMsg(msg, phoneNumber)
+                  );
+                  await Promise.all(promiseArr);
+                }
+                if (email) {
+                  await sendEmail(demandData, email);
+                }
+              } catch (err) {
+                await pusher.trigger(
+                  "burton-stock",
+                  "handle-error",
+                  err.message
+                );
+              }
             }
           }
         }, interval * 1000);
