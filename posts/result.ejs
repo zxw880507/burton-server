@@ -120,7 +120,7 @@
             <% demand.forEach(product => { %>
                 <ul>
                     <% Object.keys(product).forEach(key => { %>
-                        <% if (["id", "name", "color", "size", "addToCartLink"].includes(key)) { %>
+                        <% if (["itemId", "name", "color", "size", "addToCartLink"].includes(key)) { %>
                             <li><span><%= key %></span><span>
                             <% if (key === "addToCartLink") { %>
                                 <a href="https://www.burton.com<%= product[key] %>.html" target="_blank">Add to Cart</a>
