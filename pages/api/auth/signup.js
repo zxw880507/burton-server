@@ -11,20 +11,16 @@ export default withSession(async (req, res) => {
     },
   });
   if (exist) {
-    console.log("email err");
     errorMessage.email = "Email Address is Already Registered";
   }
   if (!/^[a-zA-Z0-9]{6,10}$/.test(password)) {
-    console.log("password err");
     errorMessage.password =
       "Password must be between six and ten characters long\nCan only contain any letters a to z and/or any numbers from 0 through 9";
   }
   if (password !== repassword) {
-    console.log("repassword err");
     errorMessage.repassword = "Password and confirm password does not match";
   }
   if (Object.keys(errorMessage).length) {
-    console.log("overall error");
     res.status(500).json({ errorMessage });
   } else {
     try {
