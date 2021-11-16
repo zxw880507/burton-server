@@ -14,12 +14,18 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import { setSignup, setLogin, authState } from "../store/features/authSlice";
+import {
+  setSignup,
+  setLogin,
+  authState,
+  resetError,
+} from "../store/features/authSlice";
 
 export default function AuthForm(props) {
   const { formType } = props;
   const router = useRouter();
   const dispatch = useDispatch();
+  const { error } = useSelector(authState);
   const [showPassword, setShowPassword] = useState({
     password: false,
     repassword: false,
@@ -28,8 +34,6 @@ export default function AuthForm(props) {
   const [authInputs, setAuthInputs] = useState(null);
 
   const [isEmpty, setIsEmpty] = useState(false);
-
-  const [errors, setErrors] = useState({});
 
   const handleClickShowPassword = (label) => (event) => {
     setShowPassword((prev) => ({ ...prev, [label]: !prev[label] }));
@@ -57,7 +61,7 @@ export default function AuthForm(props) {
             .then((res) => {
               router.push(`/${res.id}`);
             })
-            .catch((e) => setErrors(e.errorMessage));
+            .catch((e) => console.log(e.errorMessage));
           break;
         case "LOGIN":
           dispatch(setLogin(authInputs))
@@ -65,7 +69,7 @@ export default function AuthForm(props) {
             .then((res) => {
               router.push(`/${res.id}`);
             })
-            .catch((e) => setErrors(e.errorMessage));
+            .catch((e) => console.log(e.errorMessage));
           break;
         default:
           break;
@@ -79,7 +83,7 @@ export default function AuthForm(props) {
 
   const handleFocus = (event) => {
     setIsEmpty(false);
-    setErrors({});
+    dispatch(resetError());
   };
   useEffect(() => {
     if (formType === "LOGIN") {
@@ -97,10 +101,9 @@ export default function AuthForm(props) {
     }
     return () => {
       setIsEmpty(false);
-      setErrors({});
     };
   }, [formType]);
-  return authInputs && errors ? (
+  return authInputs ? (
     <Box
       component="form"
       sx={{
@@ -121,7 +124,9 @@ export default function AuthForm(props) {
           onChange={handleChange("email")}
           autoComplete="off"
         />
-        <FormHelperText error={errors.email}>{errors.email}</FormHelperText>
+        {error && (
+          <FormHelperText error={error.email}>{error.email}</FormHelperText>
+        )}
       </FormControl>
       <FormControl sx={{ mt: "1rem", width: "25ch" }} variant="standard">
         <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
@@ -143,9 +148,11 @@ export default function AuthForm(props) {
             </InputAdornment>
           }
         />
-        <FormHelperText error={errors.password}>
-          {errors.password}
-        </FormHelperText>
+        {error && (
+          <FormHelperText error={error.password}>
+            {error.password}
+          </FormHelperText>
+        )}
       </FormControl>
       {formType === "SIGNUP" && (
         <FormControl sx={{ mt: "1rem", width: "25ch" }} variant="standard">
@@ -170,9 +177,11 @@ export default function AuthForm(props) {
               </InputAdornment>
             }
           />
-          <FormHelperText error={errors.repassword}>
-            {errors.repassword}
-          </FormHelperText>
+          {error && (
+            <FormHelperText error={error.repassword}>
+              {error.repassword}
+            </FormHelperText>
+          )}
         </FormControl>
       )}
       <Collapse in={isEmpty} timeout={{ appear: 300, enter: 200, exit: 100 }}>
