@@ -62,6 +62,7 @@ export default function UserMain() {
         dispatch(updateFetchingList(data));
       });
       channel.bind("handle-error", (err) => {
+        console.log(err);
         alert(err);
       });
     }
