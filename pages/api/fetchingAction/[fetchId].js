@@ -31,6 +31,7 @@ const handler = async (req, res) => {
             },
           });
           if (curr.status !== "FETCHING") {
+            console.log("clear");
             clearInterval(fetchLoop);
           } else {
             const demandData = await getDemandFetch(pid, form);
@@ -53,6 +54,7 @@ const handler = async (req, res) => {
                     demandItem: true,
                   },
                 });
+                console.log("succeeded");
                 await pusher.trigger("burton-stock", userId, doneFetch);
 
                 const { phoneNumber, email } = doneFetch;
