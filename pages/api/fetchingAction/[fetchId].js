@@ -36,6 +36,7 @@ const handler = async (req, res) => {
           } else {
             const demandData = await getDemandFetch(pid, form);
             if (demandData.length) {
+              clearInterval(fetchLoop);
               try {
                 await prisma.demandItem.createMany({
                   data: demandData.map((item) => ({
