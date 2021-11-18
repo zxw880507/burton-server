@@ -23,59 +23,63 @@ const handler = async (req, res) => {
         const pid = currentFetch.productId;
         const interval = currentFetch.interval;
         fetchLoop = setInterval(async () => {
-          // const curr = await prisma.productFetch.findUnique({
-          //   where: {
-          //     id: fetchId,
-          //   },
-          //   select: {
-          //     status: true,
-          //   },
-          // });
-          // if (curr.status !== "FETCHING") {
-          //   console.log("clear");
-          //   clearInterval(fetchLoop);
-          // } else {
-          const demandData = await getDemandFetch(pid, form);
-          if (demandData.length) {
+          const curr = await prisma.productFetch.findUnique({
+            where: {
+              id: fetchId,
+            },
+            select: {
+              status: true,
+            },
+          });
+          if (curr.status !== "FETCHING") {
+            console.log("clear");
             clearInterval(fetchLoop);
-            try {
-              await prisma.demandItem.createMany({
-                data: demandData.map((item) => ({
-                  ...item,
-                  productFetchId: fetchId,
-                })),
-              });
-              const doneFetch = await prisma.productFetch.update({
-                where: {
-                  id: fetchId,
-                },
-                data: {
-                  status: "SUCCEEDED",
-                },
-                include: {
-                  demandItem: true,
-                },
-              });
-              console.log("succeeded");
-              await pusher.trigger("burton-stock", userId, doneFetch);
-
-              const { phoneNumber, email } = doneFetch;
-              if (phoneNumber) {
-                const messages = getMsgArray(demandData, 1500);
-                const promiseArr = messages.map((msg) =>
-                  sendMsg(msg, phoneNumber)
-                );
-                await Promise.all(promiseArr);
-              }
-              if (email) {
-                await sendEmail(demandData, email);
-              }
+          } else {
+            const demandData = await getDemandFetch(pid, form);
+            if (demandData.length) {
               clearInterval(fetchLoop);
-            } catch (err) {
-              await pusher.trigger("burton-stock", "handle-error", err.message);
+              try {
+                await prisma.demandItem.createMany({
+                  data: demandData.map((item) => ({
+                    ...item,
+                    productFetchId: fetchId,
+                  })),
+                });
+                const doneFetch = await prisma.productFetch.update({
+                  where: {
+                    id: fetchId,
+                  },
+                  data: {
+                    status: "SUCCEEDED",
+                  },
+                  include: {
+                    demandItem: true,
+                  },
+                });
+                console.log("succeeded");
+                await pusher.trigger("burton-stock", userId, doneFetch);
+
+                const { phoneNumber, email } = doneFetch;
+                if (phoneNumber) {
+                  const messages = getMsgArray(demandData, 1500);
+                  const promiseArr = messages.map((msg) =>
+                    sendMsg(msg, phoneNumber)
+                  );
+                  await Promise.all(promiseArr);
+                }
+                if (email) {
+                  await sendEmail(demandData, email);
+                }
+                clearInterval(fetchLoop);
+              } catch (err) {
+                await pusher.trigger(
+                  "burton-stock",
+                  "handle-error",
+                  err.message
+                );
+              }
             }
           }
-          // }
         }, interval * 1000);
         res.status(200).json(currentFetch);
       } catch (err) {
